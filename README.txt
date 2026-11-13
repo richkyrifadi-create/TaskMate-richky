@@ -42,5 +42,9 @@ DEPLOY KE HOSTING GRATIS (contoh: InfinityFree)
 5. Upload semua file (termasuk config/config.local.php) ke folder htdocs lewat File Manager atau FTP.
 6. Buka alamat subdomain kamu, daftar akun baru, dan TaskMate siap dipakai.
 
-Catatan: hosting gratis biasanya tidak bisa mengirim email, jadi fitur lupa password
-belum bisa mengirim tautan reset kecuali SMTP dikonfigurasi.
+EMAIL RESET PASSWORD (GMAIL)
+Hosting gratis tidak bisa mengirim email langsung, jadi TaskMate mengirim lewat Gmail:
+1. Aktifkan Verifikasi 2 Langkah di akun Google yang mau dipakai sebagai pengirim.
+2. Buka myaccount.google.com/apppasswords, buat App Password (misalnya nama "TaskMate"), salin 16 hurufnya.
+3. Di config/config.local.php tambahkan smtp_host, smtp_port, smtp_user, smtp_pass
+   (lihat contoh di config/config.example.php), lalu upload ulang file itu.

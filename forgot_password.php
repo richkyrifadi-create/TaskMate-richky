@@ -1,6 +1,7 @@
 <?php
 require 'config/database.php';
 require 'config/auth.php';
+require 'config/mailer.php';
 
 // Tabel dibuat otomatis agar database lama tidak perlu di-import ulang.
 $pdo->exec("CREATE TABLE IF NOT EXISTS password_resets (
@@ -47,10 +48,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $body = "Halo {$user['name']},\n\nGunakan tautan berikut untuk membuat password baru (berlaku 15 menit dan hanya bisa digunakan sekali):\n\n{$resetUrl}\n\nJika kamu tidak meminta reset password, abaikan email ini.";
                 $headers = "From: TaskMate <no-reply@localhost>\r\nContent-Type: text/plain; charset=UTF-8";
 
-                // Localhost: tampilkan tautan hanya untuk pengujian lokal.
-                // Hosting: konfigurasi mail() / SMTP terlebih dahulu agar tautan dikirim melalui email.
-                $isLocal = in_array(strtolower($host), ['localhost', '127.0.0.1']);
-                if ($isLocal) {
+                // Kalau SMTP (misalnya Gmail) sudah diatur di config.local.php, kirim lewat situ.
+                // Kalau belum dan masih di localhost, tampilkan tautan langsung untuk pengujian.
+                $isLocal = in_array(strtolower(preg_replace('/:\d+$/', '', $host)), ['localhost', '127.0.0.1']);
+                if (smtp_configured($config)) {
+                    if (!send_mail($config, $user['email'], $user['name'], $subject, $body, $mailError)) {
+                        error_log('TaskMate reset email gagal: ' . $mailError);
+                        if ($isLocal) $devLink = $resetUrl;
+                    }
+                } elseif ($isLocal) {
                     $devLink = $resetUrl;
                 } else {
                     @mail($user['email'], $subject, $body, $headers);
