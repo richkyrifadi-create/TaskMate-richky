@@ -58,6 +58,20 @@ iconify-icon{display:inline-block;width:1em;height:1em;vertical-align:-.125em}
 .page-description{margin:6px 0 0;color:var(--muted);font-size:13px}
 .date-chip{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:10px 16px;color:var(--muted);font-size:12px;font-weight:500;background:rgba(255,253,248,.8);border:1px solid var(--line);white-space:nowrap}
 
+/* ---------- pengingat deadline ---------- */
+.reminder{display:flex;align-items:center;gap:14px;margin:-8px 0 22px;padding:14px 18px;border-radius:var(--radius);background:rgba(142,156,117,.16);border:1px solid rgba(142,156,117,.4);animation:wordIn .5s cubic-bezier(.2,.8,.2,1)}
+.reminder.urgent{background:rgba(185,106,74,.12);border-color:rgba(185,106,74,.4)}
+.reminder-icon{width:40px;height:40px;flex:none;border-radius:50%;display:grid;place-items:center;font-size:20px;background:var(--forest);color:#F2EEE5}
+.reminder.urgent .reminder-icon{background:var(--terra);animation:floatY 2.4s ease-in-out infinite}
+.reminder-text{flex:1;min-width:0}
+.reminder-text strong{font-size:14px;font-weight:600}
+.reminder-text p{margin:2px 0 0;font-size:13px;color:var(--muted)}
+.reminder-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:flex-end}
+.reminder-actions .secondary-btn{padding:9px 14px;font-size:12px}
+.reminder-close{border:0;background:transparent;color:var(--soft);font-size:20px;display:grid;place-items:center;padding:4px}
+.reminder-close:hover{color:var(--ink)}
+@media (max-width:640px){.reminder{flex-wrap:wrap;align-items:flex-start}.reminder-text{flex-basis:calc(100% - 54px)}.reminder-actions{width:100%;justify-content:space-between}}
+
 /* ---------- dashboard ---------- */
 .welcome{position:relative;overflow:hidden;min-height:190px;border-radius:28px;padding:34px 38px;color:#F2EEE5;
   background:radial-gradient(circle at 18% 30%,rgba(142,156,117,.55),transparent 45%),radial-gradient(circle at 88% 70%,rgba(185,106,74,.45),transparent 40%),linear-gradient(120deg,#2C3927,#3B4B34 55%,#4B5C40);

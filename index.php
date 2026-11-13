@@ -42,6 +42,15 @@ $descriptions=['dashboard'=>'Ringkasan aktivitas akademik dan produktivitasmu.',
 </nav>
 <main class="main">
 <header class="topbar"><div><p class="eyebrow">Student workspace</p><h1 class="split"><?=htmlspecialchars($titles[$page])?></h1><p class="page-description"><?=htmlspecialchars($descriptions[$page])?></p></div><div class="date-chip"><iconify-icon icon="solar:calendar-linear" aria-hidden="true"></iconify-icon><span id="today"></span></div></header>
+<section id="reminder" class="reminder hidden" role="status" aria-live="polite">
+  <span class="reminder-icon"><iconify-icon icon="solar:bell-bing-bold" aria-hidden="true"></iconify-icon></span>
+  <div class="reminder-text"><strong id="reminder-title"></strong><p id="reminder-detail"></p></div>
+  <div class="reminder-actions">
+    <button type="button" id="notif-enable" class="secondary-btn hidden"><iconify-icon icon="solar:bell-linear" aria-hidden="true"></iconify-icon>Aktifkan notifikasi</button>
+    <a class="text-link" href="index.php?page=deadlines">Lihat deadline <iconify-icon icon="solar:arrow-right-linear" aria-hidden="true"></iconify-icon></a>
+    <button type="button" id="reminder-close" class="reminder-close" aria-label="Tutup pengingat"><iconify-icon icon="solar:close-circle-linear" aria-hidden="true"></iconify-icon></button>
+  </div>
+</section>
 
 <?php if($page==='dashboard'): ?>
 <section class="welcome reveal"><div><p class="welcome-label">Your personal task manager</p><h2 class="split">Halo, <em><?=htmlspecialchars($u['name'])?></em></h2><p>Atur tugasmu, selesaikan satu per satu, dan capai targetmu.</p></div>

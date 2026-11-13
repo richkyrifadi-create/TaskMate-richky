@@ -148,7 +148,67 @@ function renderDeadlines() {
     $('deadline-empty').classList.toggle('hidden', shown.length > 0);
     shown.forEach(task => items.append(makeTaskCard(task, { deadline: true })));
 }
+// ---------- Pengingat deadline ----------
+function isoOffset(days) {
+    const d = new Date();
+    d.setDate(d.getDate() + days);
+    return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+}
+function storage(key, value) {
+    try {
+        if (value === undefined) return localStorage.getItem(key);
+        localStorage.setItem(key, value);
+    } catch (e) { return null; }
+}
+function reminderSummary() {
+    const pending = tasks.filter(task => !task.completed);
+    const today = isoToday(), tomorrow = isoOffset(1);
+    const late = pending.filter(task => task.deadline < today);
+    const due = pending.filter(task => task.deadline === today);
+    const soon = pending.filter(task => task.deadline === tomorrow);
+    const parts = [];
+    if (late.length) parts.push(`${late.length} tugas terlambat`);
+    if (due.length) parts.push(`${due.length} deadline hari ini`);
+    if (soon.length) parts.push(`${soon.length} deadline besok`);
+    const names = [...late, ...due, ...soon].slice(0, 3).map(task => task.title);
+    return { count: late.length + due.length + soon.length, text: parts.join(', '), names, urgent: late.length + due.length > 0 };
+}
+function renderReminder() {
+    const box = $('reminder');
+    if (!box) return;
+    const info = reminderSummary();
+    const dismissed = storage('tm-reminder-dismissed') === isoToday() + ':' + info.text;
+    box.classList.toggle('hidden', !info.count || dismissed);
+    box.classList.toggle('urgent', info.urgent);
+    if (!info.count) return;
+    $('reminder-title').textContent = info.urgent ? 'Ada tugas yang perlu dikerjain sekarang!' : 'Siap-siap, ada deadline besok';
+    $('reminder-detail').textContent = info.text.charAt(0).toUpperCase() + info.text.slice(1) + (info.names.length ? ': ' + info.names.join(', ') + (info.count > info.names.length ? ', dan lainnya.' : '.') : '.');
+    $('reminder-close').onclick = () => { storage('tm-reminder-dismissed', isoToday() + ':' + info.text); box.classList.add('hidden'); };
+
+    const btn = $('notif-enable');
+    const supported = 'Notification' in window;
+    btn.classList.toggle('hidden', !supported || Notification.permission !== 'default');
+    btn.onclick = async () => {
+        const result = await Notification.requestPermission();
+        btn.classList.add('hidden');
+        if (result === 'granted') notifyDeadlines(info, true);
+    };
+    if (supported && Notification.permission === 'granted') notifyDeadlines(info, false);
+}
+function notifyDeadlines(info, force) {
+    // Notifikasi browser maksimal sekali sehari, kecuali baru saja diizinkan.
+    if (!force && storage('tm-notified') === isoToday()) return;
+    try {
+        new Notification('TaskMate: ' + (info.urgent ? 'deadline mepet!' : 'deadline besok'), {
+            body: info.text.charAt(0).toUpperCase() + info.text.slice(1) + '.',
+            tag: 'taskmate-deadline'
+        });
+        storage('tm-notified', isoToday());
+    } catch (e) { /* beberapa browser HP tidak mendukung notifikasi langsung */ }
+}
+
 function render() {
+    renderReminder();
     if (currentView === 'dashboard') renderDashboard();
     if (currentView === 'tasks') renderTasks();
     if (currentView === 'deadlines') renderDeadlines();
